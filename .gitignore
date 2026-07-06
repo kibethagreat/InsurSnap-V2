@@ -1,0 +1,23 @@
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+venv/
+env/
+.venv/
+
+# Django
+db.sqlite3
+staticfiles/
+*.log
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+EOF
