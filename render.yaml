@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: micro-claims-portal
+    env: python
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput"
+    startCommand: "gunicorn claims_portal.wsgi:application"
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: "micro-claims-portal.onrender.com"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: AUTO_APPROVAL_MAX_AMOUNT
+        value: "1500.00"
+      - key: AUTO_APPROVAL_MIN_POLICY_AGE_DAYS
+        value: "30"

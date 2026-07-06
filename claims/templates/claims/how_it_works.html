@@ -1,0 +1,45 @@
+{% extends "claims/base.html" %}
+
+{% block title %}InsurSnap Claims | How it Works{% endblock %}
+
+{% block content %}
+<section class="relative overflow-hidden" style="min-height: calc(100vh - 130px);">
+  {% include "claims/_force_field.html" with density=0.5 %}
+
+  <div class="relative z-10 max-w-5xl mx-auto px-6 py-16">
+    <div class="mb-6 flex items-center gap-2 font-mono text-xs" style="color: var(--text-low);">
+      <span>InsurSnap Claims</span>
+      <span>&middot;</span>
+      <span style="color: var(--text-mid);">How it Works</span>
+    </div>
+
+    <div class="mb-8">
+      <span class="badge-eyebrow mb-4">
+        <span class="status-dot live"></span>
+        SYSTEM DOCUMENTATION
+      </span>
+      <h1 class="font-display font-bold text-3xl sm:text-4xl mt-4" style="color: var(--text-hi);">
+        How InsurSnap Claims Works
+      </h1>
+      <p class="mt-3 text-sm sm:text-base" style="color: var(--text-mid);">
+        A look under the hood at the triage engine, data flow, and rules that power instant claim decisions.
+      </p>
+    </div>
+
+    <div class="glass-card p-6 sm:p-10 overflow-hidden">
+      <article class="readme-prose">
+        {{ readme_html|safe }}
+      </article>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-3 mt-8">
+      <a href="{% url 'claim_submit' %}" class="btn btn-gold font-semibold">
+        File a New Claim
+      </a>
+      <a href="{% url 'landing' %}" class="btn btn-ghost-outline font-medium">
+        Back to Home
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

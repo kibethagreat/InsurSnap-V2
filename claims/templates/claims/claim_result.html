@@ -1,0 +1,156 @@
+{% extends "claims/base.html" %}
+{% load humanize %}
+
+{% block title %}InsurSnap Claims | Claim {{ claim.status }}{% endblock %}
+
+{% block content %}
+<section class="relative overflow-hidden" style="min-height: calc(100vh - 130px);">
+  {% include "claims/_force_field.html" with density=0.6 %}
+
+  <div class="relative z-10 max-w-2xl mx-auto px-6 py-16">
+    <div class="glass-card p-6 sm:p-8" id="claim-summary-card">
+
+      <div class="flex items-start justify-between flex-wrap gap-3">
+        <div class="flex items-center gap-3">
+          {% if claim.status == 'Auto-Approved' %}
+            <span class="badge badge-approved font-mono font-semibold px-3 py-3 text-xs">AUTO-APPROVED</span>
+          {% else %}
+            <span class="badge badge-review font-mono font-semibold px-3 py-3 text-xs">MANUAL REVIEW</span>
+          {% endif %}
+        </div>
+        <div class="font-mono text-xs text-right" style="color: var(--text-low);">
+          Decided: {% now "Y-m-d H:i:s" %}
+        </div>
+      </div>
+
+      <div class="flex items-start gap-4 mt-6">
+        {% if claim.status == 'Auto-Approved' %}
+          <span class="inset-panel flex items-center justify-center w-14 h-14 rounded-full flex-shrink-0" style="border-color: rgba(52,211,153,.3); background: var(--success-bg);">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 6L9 17l-5-5" stroke="var(--success)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        {% else %}
+          <span class="inset-panel flex items-center justify-center w-14 h-14 rounded-full flex-shrink-0" style="border-color: rgba(251,191,36,.3); background: var(--warning-bg);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 8v5m0 3.5h.01M10.3 3.9L2.6 17.3A1.8 1.8 0 004.2 20h15.6a1.8 1.8 0 001.6-2.7L13.7 3.9a1.8 1.8 0 00-3.4 0z" stroke="var(--warning)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        {% endif %}
+
+        <div>
+          <h1 class="font-display font-bold text-2xl sm:text-3xl" style="color: var(--text-hi);">
+            {% if claim.status == 'Auto-Approved' %}
+              Claim Successfully Processed
+            {% else %}
+              Claim Routed for Manual Review
+            {% endif %}
+          </h1>
+          <p class="font-mono text-sm mt-2" style="color: var(--text-mid);">
+            Reference: {% if claim.record_id %}CLM-{{ claim.record_id|slice:":8"|upper }}{% else %}PENDING{% endif %}
+          </p>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-5 mt-8">
+        <div>
+          <div class="field-label" style="color: var(--text-low); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase;">Decision Reason</div>
+          <p class="mt-2 text-sm leading-relaxed" style="color: var(--text-hi);">
+            {% if claim.status == 'Auto-Approved' %}
+              Automated approval granted: claim amount (${{ claim.claim_amount|floatformat:2|intcomma }})
+              is within the auto-approval threshold and Policy ID {{ claim.policy_id }} met the minimum active-duration requirement.
+            {% else %}
+              {% for reason in claim.reasons %}
+                {{ reason }}{% if not forloop.last %} {% endif %}
+              {% endfor %}
+            {% endif %}
+          </p>
+
+          <div class="field-label mt-5" style="color: var(--text-low); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase;">
+            {% if claim.status == 'Auto-Approved' %}Payout Method{% else %}Loss Category{% endif %}
+          </div>
+          <p class="mt-2 text-sm" style="color: var(--text-hi);">
+            {% if claim.status == 'Auto-Approved' %}
+              Direct deposit to primary account on file
+            {% else %}
+              {{ claim.loss_category|capfirst }}
+            {% endif %}
+          </p>
+        </div>
+
+        <div class="inset-panel p-4">
+          <div class="font-mono text-xs uppercase tracking-wider" style="color: var(--text-low);">
+            {% if claim.status == 'Auto-Approved' %}Approved Amount{% else %}Claim Amount{% endif %}
+          </div>
+          <div class="font-display font-bold text-3xl mt-2" style="color: var(--text-hi);">
+            ${{ claim.claim_amount|floatformat:2|intcomma }}
+          </div>
+          {% if claim.status == 'Auto-Approved' %}
+            <p class="text-xs mt-2 flex items-center gap-1.5" style="color: var(--success);">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg>
+              Expected arrival: 1-2 business days
+            </p>
+          {% else %}
+            <p class="text-xs mt-2 flex items-center gap-1.5" style="color: var(--warning);">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg>
+              Estimated review: 1-2 business days
+            </p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <div class="flex items-center gap-2 font-semibold text-sm" style="color: var(--text-hi);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 6h16M4 12h16M4 18h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Next Steps
+        </div>
+        <div class="grid sm:grid-cols-3 gap-3 mt-3">
+          {% if claim.status == 'Auto-Approved' %}
+            <div class="inset-panel p-3">
+              <div class="font-mono text-xs" style="color: var(--text-low);">1. Documentation</div>
+              <p class="text-xs mt-1.5" style="color: var(--text-mid);">Download your approval certificate for tax purposes.</p>
+            </div>
+            <div class="inset-panel p-3">
+              <div class="font-mono text-xs" style="color: var(--text-low);">2. Verification</div>
+              <p class="text-xs mt-1.5" style="color: var(--text-mid);">A receipt has been sent to your registered email address.</p>
+            </div>
+            <div class="inset-panel p-3">
+              <div class="font-mono text-xs" style="color: var(--text-low);">3. Settlement</div>
+              <p class="text-xs mt-1.5" style="color: var(--text-mid);">Funds are usually released within 24-48 hours.</p>
+            </div>
+          {% else %}
+            <div class="inset-panel p-3">
+              <div class="font-mono text-xs" style="color: var(--text-low);">1. Submission Received</div>
+              <p class="text-xs mt-1.5" style="color: var(--text-mid);">Your claim has been logged for manual assessment.</p>
+            </div>
+            <div class="inset-panel p-3">
+              <div class="font-mono text-xs" style="color: var(--text-low);">2. Adjuster Review</div>
+              <p class="text-xs mt-1.5" style="color: var(--text-mid);">A claims adjuster will verify the details you provided.</p>
+            </div>
+            <div class="inset-panel p-3">
+              <div class="font-mono text-xs" style="color: var(--text-low);">3. Decision Notice</div>
+              <p class="text-xs mt-1.5" style="color: var(--text-mid);">You'll be notified by email once a decision is made.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 mt-8">
+        <button type="button" onclick="window.print()" class="btn btn-ghost-outline font-medium">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-1"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Download Claim Summary
+        </button>
+        <a href="{% url 'landing' %}" class="btn btn-gold font-semibold">Back to Dashboard</a>
+      </div>
+
+      <div class="mt-6 pt-5 flex items-center justify-between font-mono text-xs" style="border-top: 1px solid var(--border-subtle); color: var(--text-low);">
+        <a href="{% url 'claim_submit' %}" class="hover:underline" style="color: var(--text-mid);">File another claim</a>
+        <span class="flex items-center gap-2">
+          <span class="status-dot" style="background: {% if claim.status == 'Auto-Approved' %}var(--success){% else %}var(--warning){% endif %}; box-shadow: 0 0 0 3px {% if claim.status == 'Auto-Approved' %}var(--success-bg){% else %}var(--warning-bg){% endif %};"></span>
+          {% if claim.status == 'Auto-Approved' %}AUTO_APPROVED_SUCCESS{% else %}MANUAL_REVIEW_PENDING{% endif %}
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

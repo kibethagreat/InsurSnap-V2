@@ -1,0 +1,67 @@
+{% extends "claims/base.html" %}
+
+{% block title %}InsurSnap Claims | Intelligent Claims Processing{% endblock %}
+
+{% block content %}
+<section class="relative overflow-hidden" style="min-height: calc(100vh - 130px);">
+  {% include "claims/_force_field.html" with density=1.4 %}
+
+  <div class="relative z-10 max-w-4xl mx-auto px-6 pt-24 pb-16 flex flex-col items-center text-center">
+    <span class="badge-eyebrow mb-8">
+      <span class="status-dot live"></span>
+      AI-POWERED TRIAGE ACTIVE
+    </span>
+
+    <h1 class="font-display font-bold leading-[1.05] text-4xl sm:text-5xl md:text-6xl">
+      <span class="block" style="color: var(--text-hi);">Intelligent Claims</span>
+      <span class="block" style="color: var(--gold);">Processed Instantly</span>
+    </h1>
+
+    <p class="mt-6 max-w-2xl text-base sm:text-lg" style="color: var(--text-mid);">
+      Experience frictionless micro-claims processing. Our automated rule engine evaluates
+      Policy IDs and loss categories in real-time, delivering approvals in under 60 seconds.
+    </p>
+
+    <div class="mt-10 flex flex-col sm:flex-row items-center gap-4">
+      <a href="{% url 'claim_submit' %}" class="btn btn-gold px-6 font-semibold">
+        File a New Claim
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="ml-1">
+          <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="{% url 'claim_result' %}" class="btn btn-ghost-outline px-6 font-medium">
+        Track Existing Claim
+      </a>
+    </div>
+  </div>
+
+  <div class="relative z-10 max-w-6xl mx-auto px-6 pb-8 flex items-center justify-between font-mono text-xs" style="color: var(--text-low);">
+    <div>
+      <div class="uppercase tracking-wider" style="font-size: .65rem;">Average Decision Time</div>
+      <div id="decision-timer" class="text-lg mt-1" style="color: var(--text-mid);">00:48.12</div>
+    </div>
+    <div class="text-right">
+      <div class="uppercase tracking-wider" style="font-size: .65rem;">Policy Status</div>
+      <div class="text-lg mt-1 flex items-center gap-2" style="color: var(--text-mid);">
+        <span class="status-dot live"></span> SYSTEMS NOMINAL
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_head %}
+<script>
+  // Ambient decorative readout, ticks like the decision engine is live.
+  document.addEventListener('DOMContentLoaded', function () {
+    const el = document.getElementById('decision-timer');
+    if (!el) return;
+    setInterval(function () {
+      const seconds = 40 + Math.random() * 20;
+      const whole = Math.floor(seconds).toString().padStart(2, '0');
+      const frac = Math.round((seconds - Math.floor(seconds)) * 100).toString().padStart(2, '0');
+      el.textContent = '00:' + whole + '.' + frac;
+    }, 2600);
+  });
+</script>
+{% endblock %}
