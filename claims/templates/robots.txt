@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /result/
+
+Sitemap: https://insursnap-v2.onrender.com/sitemap.xml
